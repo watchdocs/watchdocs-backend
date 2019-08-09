@@ -3,5 +3,3 @@ import documentRouter from './document';
 
 const router = express.Router();
 router.use('/document', documentRouter);
-
-export default router;
