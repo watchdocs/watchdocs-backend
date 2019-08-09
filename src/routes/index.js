@@ -5,6 +5,9 @@ import search from './search';
 import users from './users';
 
 const router = express.Router();
+router.use(express.json());
+router.use(express.urlencoded( {extended : false } ));
+
 router.use('/document', documentRouter);
 
 router.use('/auth', auth);
