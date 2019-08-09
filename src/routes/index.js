@@ -1,10 +1,10 @@
 import express from 'express';
-import userAuth from './userAuth';
-import userAuthController from '../controllers/userAuthController';
+import auth from './userAuth';
+import search from './search';
+import users from './users';
 
 const router = express.Router();
-router.post('/userAuth', userAuth);
-router.post('/login', userAuthController.register);
-router.get('/check', userAuthController.check);
-
+router.use('/auth', auth);
+router.use('/search', search);
+router.use('/users', users);
 export default router;
