@@ -38,7 +38,7 @@ exports.register = (req, res) => {
   };
 
   // check username duplication
-  User.findUserByUserID(userID)
+  User.find(userID)
     .then(create)
     .then(set)
     .then(count)
