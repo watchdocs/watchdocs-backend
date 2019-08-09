@@ -2,7 +2,7 @@
  user is given token when verified
 */
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
+import User from '../models/user';
 
 exports.login = (req, res) => {
   const { username, password } = req.body;
