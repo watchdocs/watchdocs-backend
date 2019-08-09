@@ -1,8 +1,8 @@
 import express from 'express';
 import documentRouter from './document';
-import auth from './userAuth';
 import search from './search';
 import users from './users';
+import auth from './auth';
 
 const router = express.Router();
 router.use(express.json());

@@ -73,14 +73,14 @@ router.put('/:username', util.isLoggedin, checkPermission, (req, res) => {
       return user.save((er, row) => {
         if (er || !row) return res.json(util.successFalse(er));
 
-        row.password = undefined;
+        row.password = '123456';
         return res.json(util.successTrue(row));
       });
     });
 });
 
 // delete ip
-router.deleteIP('/:id/trust', (req, res) => {
+router.delete('/:id/trust', (req, res) => {
   const { id } = req.params;
   const { ip } = req.body;
   const regex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
@@ -93,9 +93,8 @@ router.deleteIP('/:id/trust', (req, res) => {
 });
 
 // delete user
-router.deleteUser('/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
   const { id } = req.params;
-
   User.findOneAndRemove({ userID: id }
     .exec((err, user) => {
       res.json((err || !user) ? util.successFalse(err) : util.successTrue(user));
