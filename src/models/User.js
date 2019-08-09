@@ -4,7 +4,7 @@ import database from '../database';
 
 const { Schema } = mongoose;
 
-const User = new Schema({
+const userSchema = new Schema({
   username: {
     type: String,
     required: [true, 'Username is requried'],
@@ -36,15 +36,16 @@ const User = new Schema({
   },
 });
 
-User.methods.verify = (password) => {
+userSchema.methods.verify = (password) => {
   const encryptedPassword = crypto.createHmac('sha1', database.secret)
     .update(password).digest('base64');
   return this.password === encryptedPassword;
 };
 
-User.methods.setAdmin = () => {
+userSchema.methods.setAdmin = () => {
   this.admin = true;
   return this.save();
 };
 
-module.exports = mongoose.model('User', User);
+const User = mongoose.model('User', userSchema);
+export default User;
