@@ -1,4 +1,4 @@
-import User from '../models/user';
+import User from '../models/User';
 
 exports.register = (req, res) => {
   const { userID, password } = req.body;
