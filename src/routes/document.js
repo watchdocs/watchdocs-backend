@@ -38,7 +38,7 @@ documentRouter.post('/documents', upload.single('document'), (req, res) => {
   });
 });
 documentRouter.get('/documents', (req, res) => Document.find().then(docs => res.json(docs)));
-documentRouter.get('/documents/:id', (req, res) => Document.find({ id: req.params.id }).then(docs => res.json(docs)));
+documentRouter.get('/documents/:id', (req, res) => Document.findById(req.params.id).then(docs => res.json(docs)));
 documentRouter.put('/documents/:id', upload.single('document'), (req, res) => {
   let txID = '';
   axios.post('https://baas-test.wiccdev.org/v2/api/contract/callcontracttx', {
