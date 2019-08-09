@@ -1,8 +1,7 @@
 import express from 'express';
+import documentRouter from './document';
 
 const router = express.Router();
-router.use('/user', userRouter);
-router.use('/song', songRouter);
-router.use('/auth', authRouter);
+router.use('/document', documentRouter);
 
 export default router;
