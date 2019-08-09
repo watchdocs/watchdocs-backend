@@ -1,9 +1,10 @@
 import { Schema } from 'mongoose';
 import mongoose from '../database';
 
-const docsSchema = new Schema(
+const documentSchema = new Schema(
   {
     name: { type: Schema.Types.String },
+    author: { type: Schema.Types.ObjectId },
     hash: { type: Schema.Types.String },
     link: { type: Schema.Types.String },
     txid: { type: Schema.Types.String },
@@ -11,6 +12,6 @@ const docsSchema = new Schema(
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 
-const Docs = mongoose.model('docs', docsSchema);
+const Document = mongoose.model('document', documentSchema);
 
-export default Docs;
+export default Document;
