@@ -1,0 +1,35 @@
+version: '3.5'
+services:
+  watchdocks-backend:
+    container_name: watchdocks-backend
+    build: .
+    restart: on-failure
+    environment:
+      JWT_SECRET: '${SECRET_KEY}'
+    depends_on:
+      - mongo
+    networks:
+      - watchdocks_network
+
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - mongo:/data/db
+    networks:
+      - watchdocks_network
+      
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongo
+    networks:
+      - watchdocks_network
+
+volumes:
+  mongo:
+networks:
+  watchdocks_network:
