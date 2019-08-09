@@ -36,30 +36,12 @@ const User = new Schema({
   },
 });
 
-// create new User document
-
-User.statistics.create = (username, department, position, userID, password) => {
-  const encryptedPassword = crypto.createHmac('sha1', database.secret)
-    .update(password).digest('base64');
-  const user = new this({
-    username,
-    department,
-    position,
-    userID,
-    encryptedPassword,
-  });
-  return user.save();
-};
-
-User.statistics.findUserByUserID = userID => this.findUser({
-  userID,
-});
-
 User.methods.verify = (password) => {
   const encryptedPassword = crypto.createHmac('sha1', database.secret)
     .update(password).digest('base64');
   return this.password === encryptedPassword;
 };
+
 User.methods.setAdmin = () => {
   this.admin = true;
   return this.save();

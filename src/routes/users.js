@@ -19,6 +19,6 @@ router.get('/', (req, res, next) => {
 });
 
 // delete users list
-router.get('/', (req, res, next) => {
+router.delete('/', (req, res, next) => {
   res.send('respond with a resource');
 });

@@ -55,3 +55,47 @@ exports.login = (req, res) => {
     .then(respond)
     .catch(anyError);
 };
+
+/*
+send token to server
+server check token to verify the user
+*/
+
+exports.check = (req, res) => {
+  const token = req.headers['x-access-token'] || req.query.token;
+
+  if (!token) {
+    return res.status(403).json({
+      success: false,
+      msg: 'fail to log in.',
+    });
+  }
+
+  const respond = (data) => {
+    res.json({
+      success: true,
+      info: data,
+    });
+  };
+
+  const promise = new Promise(
+    (resolve, reject) => {
+      jwt.verify(token, req.app.get('jwt-secret', (decodedPassword, err) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(decodedPassword);
+      }));
+    },
+  );
+
+  const anyError = (error) => {
+    res.status(403).json({
+      success: false,
+      message: error.message,
+    });
+  };
+
+  promise.then(respond(token)).catch(anyError);
+  return 0;
+};
