@@ -1,10 +1,5 @@
 import express from 'express';
-import auth from './userAuth';
-import search from './search';
-import users from './users';
+import documentRouter from './document';
 
 const router = express.Router();
-router.use('/auth', auth);
-router.use('/search', search);
-router.use('/users', users);
-export default router;
+router.use('/document', documentRouter);
