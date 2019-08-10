@@ -7,35 +7,12 @@ import User from '../models/User';
 const authRouter = express.Router();
 
 // login
-authRouter.post('/login', (req, res, next) => {
-  let isValid = true;
-  const validationError = {
-    name: 'ValidationError',
-    errors: {},
-  };
-
-  if (!req.body.userID) {
-    isValid = false;
-    validationError.errors.userID = {
-      message: 'UserID is required!',
-    };
-  }
-  if (!req.body.password) {
-    isValid = false;
-    validationError.errors.password = { message: 'Password is required!' };
-  }
-
-  if (!isValid) return res.json(util.successFalse(validationError));
-  return next();
-},
-
-(req, res) => {
+authRouter.post('/login', (req, res) => {
   User.findOne({ userID: req.body.userID })
     .select({
       password: 1, userID: 1, username: 1, email: 1,
     })
     .exec((err, user) => {
-      if (err) return res.json(util.successFalse(err));
       if (!user) {
         return res.json(util.successFalse(null, 'UserID is invalid'));
       }
@@ -47,11 +24,10 @@ authRouter.post('/login', (req, res, next) => {
         _id: user._id,
         userID: user.userID,
       };
-      const secretOrPrivateKey = process.env.JWT_SECRET;
       const options = { expiresIn: 60 * 60 * 24 };
-      return jwt.sign(payload, secretOrPrivateKey, options, (er, token) => {
-        if (er) return res.json(util.successFalse(err));
-        return res.json(util.successTrue(token));
+      return jwt.sign(payload, 'hello', options, (er, token) => {
+        if (er) return res.json(util.successFalse(er));
+        return res.json(util.successTrue([token, user.userID]));
       });
     });
 });
@@ -77,9 +53,8 @@ authRouter.get('/refresh', util.isLoggedin,
           _id: user._id,
           userID: user.userID,
         };
-        const secretOrPrivateKey = process.env.JWT_SECRET;
         const options = { expiresIn: 60 * 60 * 24 };
-        return jwt.sign(payload, secretOrPrivateKey, options, (er, token) => {
+        return jwt.sign(payload, 'hello', options, (er, token) => {
           if (er) return res.json(util.successFalse(err));
           return res.json(util.successTrue(token));
         });
