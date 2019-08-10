@@ -39,17 +39,9 @@ documentRouter.post('/documents', upload.single('document'), (req, res) => {
   });
 });
 
-// read all documents
 documentRouter.get('/documents', (req, res) => Document.find().then(docs => res.json(docs)));
-
-// read documents by document id according to position and department
-documentRouter.get('/documents/:id', userRole, (req, res) => {
-  const { id } = req.params.id;
-  Document.find({ id }).then(docs => res.json(docs));
-});
-
-// update
-documentRouter.put('/documents/:id', upload.single('document'), (req, res) => {
+documentRouter.get('/documents/:id', userRole, (req, res) => Document.findById(req.params.id).then(docs => res.json(docs)));
+documentRouter.put('/documents/:id', upload.single('document'), userRole, (req, res) => {
   let txID = '';
   axios.post('https://baas-test.wiccdev.org/v2/api/contract/callcontracttx', {
     amount: 0,
@@ -78,11 +70,48 @@ documentRouter.put('/documents/:id', upload.single('document'), (req, res) => {
     .then(docs => res.json(docs));
 });
 
-// delete
-documentRouter.delete('/documents/:id', (req, res) => {
-  Document.deleteOne({ id: req.params.id })
-    .then(() => res.status(200).end());
+documentRouter.delete('/documents/:id', userRole, (req, res) => {
+  Document.deleteOne({ id: req.params.id }).then(() => res.status(200).end());
 });
 
+documentRouter.put('/:id/department', userRole, (req, res) => {
+  const { id } = req.params;
+  const { department } = req.body;
+  if (department !== null) {
+    Document.updateOne({ id }, { $push: { department } }).then(() => res.status(200).end());
+  } else {
+    res.status(401).end();
+  }
+});
+
+documentRouter.delete('/:id/department', userRole, (req, res) => {
+  const { id } = req.params;
+  const { department } = req.body;
+  if (department !== null) {
+    Document.updateOne({ id }, { $pull: { department } }).then(() => res.status(200).end());
+  } else {
+    res.status(401).end();
+  }
+});
+
+documentRouter.put('/:id/position', userRole, (req, res) => {
+  const { id } = req.params;
+  const { position } = req.body;
+  if (position !== null) {
+    Document.updateOne({ id }, { $push: { position } }).then(() => res.status(200).end());
+  } else {
+    res.status(401).end();
+  }
+});
+
+documentRouter.delete('/:id/position', userRole, (req, res) => {
+  const { id } = req.params;
+  const { position } = req.body;
+  if (position !== null) {
+    Document.updateOne({ id }, { $pull: { position } }).then(() => res.status(200).end());
+  } else {
+    res.status(401).end();
+  }
+});
 
 export default documentRouter;

@@ -13,6 +13,7 @@
     "sourceType": "module"
   },
   "rules": {
+    "max-len": ["error", { "code": 160 }],
     "no-underscore-dangle": 0
   }
 }

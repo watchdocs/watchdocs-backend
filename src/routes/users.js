@@ -9,9 +9,15 @@ const router = express.Router();
 
 // create user account
 router.post('/', (req, res) => {
-  const newUser = new User(req.body);
+  const {
+    username, department, position, userID, password, email, admin,
+  } = req.body;
+  const newUser = new User({
+    username, department, position, userID, password, email, admin,
+  });
   newUser.save((err, user) => {
-    res.json(err || !user ? util.successFalse(err) : util.successTrue(user));
+    if (err) return res.json(err);
+    return res.json(user);
   });
 });
 

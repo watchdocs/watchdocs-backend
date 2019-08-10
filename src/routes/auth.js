@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import util from '../util';
 import User from '../models/User';
 
-const router = express.router();
+const router = express.Router();
 
 // login
 router.post('/login', (req, res, next) => {
@@ -13,10 +13,10 @@ router.post('/login', (req, res, next) => {
     errors: {},
   };
 
-  if (!req.body.username) {
+  if (!req.body.userID) {
     isValid = false;
-    validationError.errors.username = {
-      message: 'Username is required!',
+    validationError.errors.userID = {
+      message: 'UserID is required!',
     };
   }
   if (!req.body.password) {
@@ -29,19 +29,19 @@ router.post('/login', (req, res, next) => {
 },
 
 (req, res) => {
-  User.findOne({ username: req.body.username })
+  User.findOne({ userID: req.body.userID })
     .select({
-      password: 1, username: 1, name: 1, email: 1,
+      password: 1, userID: 1, username: 1, email: 1,
     })
     .exec((err, user) => {
       if (err) return res.json(util.successFalse(err));
       if (!user || !user.authenticate(req.body.password)) {
-        return res.json(util.successFalse(null, 'Username or Password is invalid'));
+        return res.json(util.successFalse(null, 'UserID or Password is invalid'));
       }
 
       const payload = {
         _id: user._id,
-        username: user.username,
+        userID: user.userID,
       };
       const secretOrPrivateKey = process.env.JWT_SECRET;
       const options = { expiresIn: 60 * 60 * 24 };
@@ -71,7 +71,7 @@ router.get('/refresh', util.isLoggedin,
 
         const payload = {
           _id: user._id,
-          username: user.username,
+          userID: user.userID,
         };
         const secretOrPrivateKey = process.env.JWT_SECRET;
         const options = { expiresIn: 60 * 60 * 24 };

@@ -13,8 +13,7 @@ router.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'content-type, x-access-token'); // 1
   next();
 });
-router.use('/document', documentRouter);
-
+router.use('/documents', documentRouter);
 router.use('/auth', auth);
 router.use('/search', search);
 router.use('/users', users);
