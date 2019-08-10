@@ -4,6 +4,8 @@ services:
     container_name: watchdocks-backend
     build: .
     restart: on-failure
+    ports:
+      - 3000:3000
     environment:
       JWT_SECRET: '${SECRET_KEY}'
     depends_on:
@@ -18,7 +20,7 @@ services:
       - mongo:/data/db
     networks:
       - watchdocks_network
-      
+
   mongo-express:
     image: mongo-express
     restart: always
