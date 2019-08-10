@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import util from '../util';
 import User from '../models/User';
 
-const router = express.router();
+const router = express.Router();
 
 // login
 router.post('/login', (req, res, next) => {

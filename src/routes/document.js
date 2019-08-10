@@ -19,7 +19,7 @@ documentRouter.post('/', upload.single('document'), (req, res) => {
   }, (async (err, row) => {
     if (err) return res.json(err);
     const txID = await ContractHelper.documentSave(row._id, row.data);
-    return Document.updateOne({ _id: row._id }, { txid: txID }, (error, document) => {
+    return Document.findOneAndUpdate({ _id: row._id }, { txid: txID }, (error, document) => {
       if (error) return res.json(error);
       return res.json(document);
     });
