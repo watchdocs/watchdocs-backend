@@ -19,7 +19,7 @@ export default class ContractHelper {
       destRegId: '1109850-3', // app regId
       fees: 1000000, // fees pay for miner
       value: 0, // amount of WICC to be sent to the app account
-      vContract: this.convertToHex(id.length, id, hash.length, hash), // contract method, hex format string
+      vContract: '010000003109000000617364666173646161', // contract method, hex format string
     };
     const wiccPrivateKey = 'YBmx5iS3DGDy2xb5NmU8BXse1dvj1s7VqQYZDwEmxCtVqFtPvvYy';
     const privateKey = bitcore.PrivateKey.fromWIF(wiccPrivateKey);
@@ -28,7 +28,6 @@ export default class ContractHelper {
     await axios.post('https://baas-test.wiccdev.org/v2/api/transaction/sendrawtx', { rawtx })
       .then(response => response.data)
       .then((json) => {
-        console.log(json.data);
         txid = json.data.hash;
       });
     return txid;
@@ -41,11 +40,11 @@ export default class ContractHelper {
     let hex4 = '';
     for (let i = 0; i < str1.length; i++) {
       const hex = str1.charCodeAt(i).toString(16);
-      hex2 += (`000${hex}`).slice(-4);
+      hex2 += (`0${hex}`).slice(-2);
     }
     for (let i = 0; i < str2.length; i++) {
       const hex = str2.charCodeAt(i).toString(16);
-      hex4 += (`000${hex}`).slice(-4);
+      hex4 += (`0${hex}`).slice(-2);
     }
     return hex1 + hex2 + hex3 + hex4;
   }
