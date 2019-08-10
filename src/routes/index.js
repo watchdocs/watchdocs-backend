@@ -1,8 +1,8 @@
 import express from 'express';
 import documentRouter from './document';
-import search from './search';
-import users from './users';
-import auth from './auth';
+import searchRouter from './search';
+import userRouter from './users';
+import authRouter from './auth';
 
 const router = express.Router();
 router.use(express.json());
@@ -14,8 +14,8 @@ router.use((req, res, next) => {
   next();
 });
 router.use('/documents', documentRouter);
-router.use('/auth', auth);
-router.use('/search', search);
-router.use('/users', users);
+router.use('/auth', authRouter);
+router.use('/search', searchRouter);
+router.use('/users', userRouter);
 
 export default router;

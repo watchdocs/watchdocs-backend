@@ -1,12 +1,13 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import util from '../util';
 import User from '../models/User';
 
-const router = express.Router();
+const authRouter = express.Router();
 
 // login
-router.post('/login', (req, res, next) => {
+authRouter.post('/login', (req, res, next) => {
   let isValid = true;
   const validationError = {
     name: 'ValidationError',
@@ -35,7 +36,7 @@ router.post('/login', (req, res, next) => {
     })
     .exec((err, user) => {
       if (err) return res.json(util.successFalse(err));
-      if (!user || !user.authenticate(req.body.password)) {
+      if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
         return res.json(util.successFalse(null, 'UserID or Password is invalid'));
       }
 
@@ -53,7 +54,7 @@ router.post('/login', (req, res, next) => {
 });
 
 // me
-router.get('/me', util.isLoggedin,
+authRouter.get('/me', util.isLoggedin,
   (req, res) => {
     User.findById(req.decoded._id)
       .exec((err, user) => {
@@ -63,7 +64,7 @@ router.get('/me', util.isLoggedin,
   });
 
 // refresh
-router.get('/refresh', util.isLoggedin,
+authRouter.get('/refresh', util.isLoggedin,
   (req, res) => {
     User.findById(req.decoded._id)
       .exec((err, user) => {
@@ -82,4 +83,4 @@ router.get('/refresh', util.isLoggedin,
       });
   });
 
-module.exports = router;
+export default authRouter;
