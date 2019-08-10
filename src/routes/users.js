@@ -1,14 +1,37 @@
+/* eslint-disable no-param-reassign */
+/* eslint no-restricted-syntax: "off", guard-for-in: "off" */
+
 import express from 'express';
 import User from '../models/User';
+import util from '../util';
 
 const router = express.Router();
 
+// create user account
+router.post('/', (req, res) => {
+  const newUser = new User(req.body);
+  newUser.save((err, user) => {
+    res.json(err || !user ? util.successFalse(err) : util.successTrue(user));
+  });
+});
+
+// read a user by userID
 router.get('/:id/trust', (req, res) => {
   const { id } = req.params;
   User.findOne({ id })
     .then(user => res.json(user.trusted_ip));
 });
 
+// show list of users
+router.get('/', util.isLoggedin, (req, res) => {
+  User.find({})
+    .sort({ userID: 1 })
+    .exec((err, userlist) => {
+      res.json(err || !userlist ? util.successFalse(err) : util.successTrue(userlist));
+    });
+});
+
+// register adequate ip
 router.post('/:id/trust', (req, res) => {
   const { id } = req.params;
   const { ip } = req.body;
@@ -21,6 +44,42 @@ router.post('/:id/trust', (req, res) => {
   }
 });
 
+// user-defined function for update and delete
+function checkPermission(req, res, next) {
+  User.findOne({ username: req.params.username }, (err, user) => {
+    if (err || !user) return res.json(util.successFalse(err));
+    if (!req.decoded || user._id !== req.decoded._id) {
+      return res.json(util.successFalse(null, 'Disapproval to access'));
+    }
+    return next();
+  });
+}
+
+// update
+router.put('/:username', util.isLoggedin, checkPermission, (req, res) => {
+  User.findOne({ username: req.params.username })
+    .select({ password: 1 })
+    .exec((err, user) => {
+      if (err || !user) return res.json(util.successFalse(err));
+
+      // update user object
+      user.originalPassword = user.password;
+      user.password = req.body.newPassword ? req.body.newPassword : user.password;
+      for (const p in req.body) {
+        user[p] = req.body[p];
+      }
+
+      // save user object
+      return user.save((er, row) => {
+        if (er || !row) return res.json(util.successFalse(er));
+
+        row.password = '123456';
+        return res.json(util.successTrue(row));
+      });
+    });
+});
+
+// delete ip
 router.delete('/:id/trust', (req, res) => {
   const { id } = req.params;
   const { ip } = req.body;
@@ -31,6 +90,15 @@ router.delete('/:id/trust', (req, res) => {
   } else {
     res.status(401).end();
   }
+});
+
+// delete user
+router.delete('/:id', (req, res) => {
+  const { id } = req.params;
+  User.findOneAndRemove({ userID: id }
+    .exec((err, user) => {
+      res.json((err || !user) ? util.successFalse(err) : util.successTrue(user));
+    }));
 });
 
 export default router;

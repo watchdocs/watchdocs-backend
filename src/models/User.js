@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-import crypto from 'crypto';
-import database from '../database';
+import bcrypt from 'bcrypt';
 
 const { Schema } = mongoose;
 
@@ -30,16 +29,75 @@ const userSchema = new Schema({
     select: false,
     trim: true,
   },
+  email: {
+    type: String,
+    match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Should be a vaild email address!'],
+    trim: true,
+  },
   admin: {
     type: Boolean,
     default: false,
   },
 });
 
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/;
+const passwordRegexErrorMessage = 'Password should be minimum 8 characters of alphabet and number combination.';
+
+userSchema.path('password').validate(() => {
+  const user = this;
+
+  if (user.isNew) {
+    if (!user.passwordConfirmation) {
+      user.invalidate(
+        'Successfully confirm password.',
+        'Fail to confirm password.',
+      );
+    }
+    if (!passwordRegex.test(user.password)) {
+      user.invalidate('password', passwordRegexErrorMessage);
+    } else if (user.password !== user.passwordConfirmation) {
+      user.invalidate(
+        'passwordConfirmation',
+        'Fail to match password confirmation',
+      );
+    }
+  }
+
+  if (!user.isNew) {
+    if (!user.currentPassword) {
+      user.invalidate('currentPassword', 'Current Password is required!');
+    }
+    if (
+      user.currentPassword
+       && !bcrypt.compareSync(user.currentPassword, user.originalPassword)
+    ) {
+      user.invalidate('currentPassword', 'Current Password is invalid!');
+    }
+    if (user.newPassword && !passwordRegex.test(user.newPassword)) {
+      user.invalidate('newPassword', passwordRegexErrorMessage);
+    } else if (user.newPassword !== user.passwordConfirmation) {
+      user.invalidate(
+        'passwordConfirmation',
+        'Password Confirmation does not matched!',
+      );
+    }
+  }
+});
+
+// execute callback function before save event
+userSchema.pre('save', (next) => {
+  const user = this;
+  if (!user.isModified('password')) {
+    return next();
+  }
+
+  user.password = bcrypt.hashSync(user.password);
+  return next();
+});
+
 userSchema.methods.verify = (password) => {
-  const encryptedPassword = crypto.createHmac('sha1', database.secret)
-    .update(password).digest('base64');
-  return this.password === encryptedPassword;
+  const user = this;
+  return bcrypt.compareSync(password, user.password);
 };
 
 userSchema.methods.setAdmin = () => {
