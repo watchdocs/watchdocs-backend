@@ -8,7 +8,7 @@ import userRole from '../middleware/userRole';
 const documentRouter = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
-documentRouter.post('/documents', upload.single('document'), (req, res) => {
+documentRouter.post('/', upload.single('document'), (req, res) => {
   let txID = '';
   axios.post('https://baas-test.wiccdev.org/v2/api/contract/callcontracttx', {
     amount: 0,
@@ -39,9 +39,9 @@ documentRouter.post('/documents', upload.single('document'), (req, res) => {
   });
 });
 
-documentRouter.get('/documents', (req, res) => Document.find().then(docs => res.json(docs)));
-documentRouter.get('/documents/:id', userRole, (req, res) => Document.findById(req.params.id).then(docs => res.json(docs)));
-documentRouter.put('/documents/:id', upload.single('document'), userRole, (req, res) => {
+documentRouter.get('/', (req, res) => Document.find().then(docs => res.json(docs)));
+documentRouter.get('/:id', userRole, (req, res) => Document.findById(req.params.id).then(docs => res.json(docs)));
+documentRouter.put('/:id', upload.single('document'), userRole, (req, res) => {
   let txID = '';
   axios.post('https://baas-test.wiccdev.org/v2/api/contract/callcontracttx', {
     amount: 0,
@@ -70,7 +70,7 @@ documentRouter.put('/documents/:id', upload.single('document'), userRole, (req, 
     .then(docs => res.json(docs));
 });
 
-documentRouter.delete('/documents/:id', userRole, (req, res) => {
+documentRouter.delete('/:id', userRole, (req, res) => {
   Document.deleteOne({ id: req.params.id }).then(() => res.status(200).end());
 });
 

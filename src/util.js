@@ -42,7 +42,7 @@ util.isLoggedin = (req, res, next) => {
   const token = req.headers['x-access-token'];
   if (!token) return res.json(util.successFalse(null, 'token is required!'));
 
-  return jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+  return jwt.verify(token, 'hello', (err, decoded) => {
     if (err) return res.json(util.successFalse(err));
     req.decoded = decoded;
     return next();

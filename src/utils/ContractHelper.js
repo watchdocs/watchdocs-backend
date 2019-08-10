@@ -19,7 +19,7 @@ export default class ContractHelper {
       destRegId: '1109850-3', // app regId
       fees: 1000000, // fees pay for miner
       value: 0, // amount of WICC to be sent to the app account
-      vContract: '010000003109000000617364666173646161', // contract method, hex format string
+      vContract: this.convertToHex(id.length, id, hash.length, hash), // contract method, hex format string
     };
     const wiccPrivateKey = 'YBmx5iS3DGDy2xb5NmU8BXse1dvj1s7VqQYZDwEmxCtVqFtPvvYy';
     const privateKey = bitcore.PrivateKey.fromWIF(wiccPrivateKey);
@@ -39,14 +39,13 @@ export default class ContractHelper {
     let hex2 = '';
     const hex3 = (num2 + 0x10000).toString(16).substr(-4);
     let hex4 = '';
-    let hex = '';
     for (let i = 0; i < str1.length; i++) {
-      hex = str1.charCodeAt(i).toString(16);
-      hex2 += (`000${hex2}`).slice(-4);
+      const hex = str1.charCodeAt(i).toString(16);
+      hex2 += (`000${hex}`).slice(-4);
     }
     for (let i = 0; i < str2.length; i++) {
-      hex = str2.charCodeAt(i).toString(16);
-      hex4 += (`000${hex2}`).slice(-4);
+      const hex = str2.charCodeAt(i).toString(16);
+      hex4 += (`000${hex}`).slice(-4);
     }
     return hex1 + hex2 + hex3 + hex4;
   }
