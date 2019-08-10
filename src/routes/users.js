@@ -55,7 +55,7 @@ userRouter.post('/:id/trust', (req, res) => {
 
 // user-defined function for update and delete
 function checkPermission(req, res, next) {
-  User.findOne({ username: req.params.username }, (err, user) => {
+  User.findOne({ userID: req.params.userID }, (err, user) => {
     if (err || !user) return res.json(util.successFalse(err));
     if (!req.decoded || user._id !== req.decoded._id) {
       return res.json(util.successFalse(null, 'Disapproval to access'));
@@ -65,8 +65,8 @@ function checkPermission(req, res, next) {
 }
 
 // update
-userRouter.put('/:username', util.isLoggedin, checkPermission, (req, res) => {
-  User.findOne({ username: req.params.username })
+userRouter.put('/:userID', util.isLoggedin, checkPermission, (req, res) => {
+  User.findOne({ userID: req.params.userID })
     .select({ password: 1 })
     .exec((err, user) => {
       if (err || !user) return res.json(util.successFalse(err));
@@ -82,7 +82,7 @@ userRouter.put('/:username', util.isLoggedin, checkPermission, (req, res) => {
       return user.save((er, row) => {
         if (er || !row) return res.json(util.successFalse(er));
 
-        row.password = '123456';
+        row.password = 'undefined';
         return res.json(util.successTrue(row));
       });
     });
