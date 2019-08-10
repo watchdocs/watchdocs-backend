@@ -5,6 +5,7 @@ import axios from 'axios';
 import Document from '../models/Document';
 import userRole from '../middleware/userRole';
 import ContractHelper from '../utils/ContractHelper';
+import util from "../util"
 
 const documentRouter = express.Router();
 const upload = multer({ dest: 'uploads/' });
@@ -25,6 +26,7 @@ documentRouter.post('/', upload.single('document'), (req, res) => {
 
 documentRouter.get('/', (req, res) => Document.find().then(docs => res.json(docs)));
 documentRouter.get('/:id', userRole, (req, res) => Document.findById(req.params.id).then(docs => res.json(docs)));
+documentRouter.get('/:id/user', util.isLoggedin, (req, res) => Document.find({ author: req.params.id }).then(docs => res.json(docs)));
 documentRouter.put('/:id', upload.single('document'), userRole, (req, res) => {
   Document.findOne({ id: req.params.id }, (err, row) => {
     const hash = md5File.sync(req.file.path);
