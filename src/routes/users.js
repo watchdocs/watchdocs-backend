@@ -2,16 +2,19 @@
 /* eslint no-restricted-syntax: "off", guard-for-in: "off" */
 
 import express from 'express';
+import bcrypt from 'bcrypt';
 import User from '../models/User';
 import util from '../util';
 
-const router = express.Router();
+const userRouter = express.Router();
 
 // create user account
-router.post('/', (req, res) => {
+userRouter.post('/', (req, res) => {
   const {
-    username, department, position, userID, password, email, admin,
+    username, department, position, userID, email, admin,
   } = req.body;
+  const password = bcrypt.hashSync(req.body.password, 10);
+
   const newUser = new User({
     username, department, position, userID, password, email, admin,
   });
@@ -22,14 +25,14 @@ router.post('/', (req, res) => {
 });
 
 // read a user by userID
-router.get('/:id/trust', (req, res) => {
+userRouter.get('/:id/trust', (req, res) => {
   const { id } = req.params;
   User.findOne({ id })
     .then(user => res.json(user.trusted_ip));
 });
 
 // show list of users
-router.get('/', util.isLoggedin, (req, res) => {
+userRouter.get('/', util.isLoggedin, (req, res) => {
   User.find({})
     .sort({ userID: 1 })
     .exec((err, userlist) => {
@@ -38,7 +41,7 @@ router.get('/', util.isLoggedin, (req, res) => {
 });
 
 // register adequate ip
-router.post('/:id/trust', (req, res) => {
+userRouter.post('/:id/trust', (req, res) => {
   const { id } = req.params;
   const { ip } = req.body;
   const regex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
@@ -62,7 +65,7 @@ function checkPermission(req, res, next) {
 }
 
 // update
-router.put('/:username', util.isLoggedin, checkPermission, (req, res) => {
+userRouter.put('/:username', util.isLoggedin, checkPermission, (req, res) => {
   User.findOne({ username: req.params.username })
     .select({ password: 1 })
     .exec((err, user) => {
@@ -86,7 +89,7 @@ router.put('/:username', util.isLoggedin, checkPermission, (req, res) => {
 });
 
 // delete ip
-router.delete('/:id/trust', (req, res) => {
+userRouter.delete('/:id/trust', (req, res) => {
   const { id } = req.params;
   const { ip } = req.body;
   const regex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
@@ -99,7 +102,7 @@ router.delete('/:id/trust', (req, res) => {
 });
 
 // delete user
-router.delete('/:id', (req, res) => {
+userRouter.delete('/:id', (req, res) => {
   const { id } = req.params;
   User.findOneAndRemove({ userID: id }
     .exec((err, user) => {
@@ -107,4 +110,4 @@ router.delete('/:id', (req, res) => {
     }));
 });
 
-export default router;
+export default userRouter;
