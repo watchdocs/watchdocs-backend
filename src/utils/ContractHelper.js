@@ -28,7 +28,7 @@ export default class ContractHelper {
     await axios.post('https://baas-test.wiccdev.org/v2/api/transaction/sendrawtx', { rawtx })
       .then(response => response.data)
       .then((json) => {
-        console.log(json.data)
+        console.log(json.data);
         txid = json.data.hash;
       });
     return txid;
@@ -40,13 +40,13 @@ export default class ContractHelper {
     const hex3 = (num2 + 0x10000).toString(16).substr(-4);
     let hex4 = '';
     let hex = '';
-    for (let i=0; i<str1.length; i++) {
+    for (let i = 0; i < str1.length; i++) {
       hex = str1.charCodeAt(i).toString(16);
-      hex2 += ('000'+hex2).slice(-4);
+      hex2 += (`000${hex2}`).slice(-4);
     }
-    for (let i=0; i<str2.length; i++) {
+    for (let i = 0; i < str2.length; i++) {
       hex = str2.charCodeAt(i).toString(16);
-      hex4 += ('000'+hex2).slice(-4);
+      hex4 += (`000${hex2}`).slice(-4);
     }
     return hex1 + hex2 + hex3 + hex4;
   }
