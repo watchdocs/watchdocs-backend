@@ -5,9 +5,7 @@ export default function (userID) {
     User.find({ userID }).then((err, row) => {
       if (err) return;
       const isDefined = row.trusted_ip.find(req.connection.remoteAddress);
-      if (isDefined) {
-        next();
-      }
+      if (isDefined) next();
     });
   };
 }

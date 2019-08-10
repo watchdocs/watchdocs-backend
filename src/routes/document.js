@@ -3,6 +3,7 @@ import multer from 'multer';
 import md5File from 'md5-file';
 import axios from 'axios';
 import Document from '../models/Document';
+import userRole from '../middleware/userRole';
 
 const documentRouter = express.Router();
 const upload = multer({ dest: 'uploads/' });
@@ -37,8 +38,17 @@ documentRouter.post('/documents', upload.single('document'), (req, res) => {
     return res.json(row);
   });
 });
+
+// read all documents
 documentRouter.get('/documents', (req, res) => Document.find().then(docs => res.json(docs)));
-documentRouter.get('/documents/:id', (req, res) => Document.findById(req.params.id).then(docs => res.json(docs)));
+
+// read documents by document id according to position and department
+documentRouter.get('/documents/:id', userRole, (req, res) => {
+  const { id } = req.params.id;
+  Document.find({ id }).then(docs => res.json(docs));
+});
+
+// update
 documentRouter.put('/documents/:id', upload.single('document'), (req, res) => {
   let txID = '';
   axios.post('https://baas-test.wiccdev.org/v2/api/contract/callcontracttx', {
@@ -67,6 +77,8 @@ documentRouter.put('/documents/:id', upload.single('document'), (req, res) => {
   })
     .then(docs => res.json(docs));
 });
+
+// delete
 documentRouter.delete('/documents/:id', (req, res) => {
   Document.deleteOne({ id: req.params.id })
     .then(() => res.status(200).end());
