@@ -2,9 +2,9 @@
 /* eslint no-restricted-syntax: "off", guard-for-in: "off" */
 
 import express from 'express';
+import bcrypt from 'bcrypt';
 import User from '../models/User';
 import util from '../util';
-import bcrypt from 'bcrypt';
 
 const userRouter = express.Router();
 

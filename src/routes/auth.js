@@ -36,7 +36,10 @@ authRouter.post('/login', (req, res, next) => {
     })
     .exec((err, user) => {
       if (err) return res.json(util.successFalse(err));
-      if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
+      if (!user) {
+        return res.json(util.successFalse(null, 'UserID is invalid'));
+      }
+      if (!bcrypt.compareSync(req.body.password, user.password)) {
         return res.json(util.successFalse(null, 'UserID or Password is invalid'));
       }
 
