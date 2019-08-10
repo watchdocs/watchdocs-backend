@@ -30,8 +30,8 @@ util.parseError = (errors) => {
       const validationError = errors.error.name;
       parsed[name] = { message: validationError.message };
     }
-  } else if (errors.code === '11000' && errors.errmsg.indexOf('username') > 0) {
-    parsed.username = { message: 'This username already exists!' };
+  } else if (errors.code === '11000' && errors.errmsg.indexOf('userID') > 0) {
+    parsed.userID = { message: 'This userID already exists!' };
   } else {
     parsed.unhandled = errors;
   }
